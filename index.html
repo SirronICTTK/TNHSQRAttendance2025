@@ -1,3 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAGKAWAYAN NHS QR Attendance System</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f5f7;
+        margin: 0;
+        padding: 0;
+    }
+    .header {
+        background-color: #2e7d32; /* Green */
+        color: white;
+        text-align: center;
+        padding: 15px;
+        font-size: 22px;
+        font-weight: bold;
+    }
+    .container {
+        max-width: 400px;
+        margin: 50px auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        padding: 20px;
+    }
+    .container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2e7d32;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+    input, select {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    button {
+        width: 100%;
+        padding: 12px;
+        background-color: #2e7d32;
+        color: white;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    button:hover {
+        background-color: #388e3c;
+    }
+    .qr-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .btn-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+    }
+    .btn-actions button {
+        width: 48%;
+    }
+</style>
+</head>
+<body>
+
 <div class="header">TAGKAWAYAN NHS QR Attendance System</div>
 
 <div class="container">
@@ -13,13 +92,13 @@
             <option value="JHS">Junior High School</option>
             <option value="SHS">Senior High School</option>
             <option value="Faculty">Faculty</option>
-            <option value="NonTeaching">Non-Teaching</option>
+            <option value="Non-Teaching">Non-Teaching</option>
         </select>
     </div>
     <div class="form-group">
         <label for="gradeLevel">Grade Level</label>
         <select id="gradeLevel">
-            <option value="">Select your year level</option>
+            <option value="">Select your grade level</option>
             <option value="Grade 7">Grade 7</option>
             <option value="Grade 8">Grade 8</option>
             <option value="Grade 9">Grade 9</option>
@@ -42,4 +121,60 @@
     </div>
 </div>
 
+<!-- QR Code Library -->
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+<script>
+    let qr;
+
+    function generateQRCode() {
+        const fullName = document.getElementById('fullName').value.trim();
+        const department = document.getElementById('department').value;
+        const gradeLevel = document.getElementById('gradeLevel').value;
+        const idNumber = document.getElementById('idNumber').value.trim();
+
+        if (!fullName || !department || !gradeLevel || !idNumber) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        const qrData = `Name: ${fullName}\nDepartment: ${department}\nGrade Level: ${gradeLevel}\nID: ${idNumber}`;
+        document.getElementById('qrcode').innerHTML = '';
+        qr = new QRCode(document.getElementById('qrcode'), {
+            text: qrData,
+            width: 200,
+            height: 200
+        });
+
+        document.getElementById('actionButtons').style.display = 'flex';
+    }
+
+    function downloadQRCode() {
+        const img = document.querySelector('#qrcode img');
+        if (img) {
+            const link = document.createElement('a');
+            link.href = img.src;
+            link.download = 'qr-code.png';
+            link.click();
+        } else {
+            alert('Please generate a QR code first');
+        }
+    }
+
+    function printQRCode() {
+        const img = document.querySelector('#qrcode img');
+        if (img) {
+            const win = window.open('');
+            win.document.write('<html><head><title>Print QR Code</title></head><body>');
+            win.document.write('<h3>TAGKAWAYAN NHS QR Attendance</h3>');
+            win.document.write('<img src="' + img.src + '"/>');
+            win.document.write('</body></html>');
+            win.print();
+            win.close();
+        } else {
+            alert('Please generate a QR code first');
+        }
+    }
+</script>
+
+</body>
+</html>
